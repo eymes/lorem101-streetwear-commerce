@@ -1,0 +1,25 @@
+@use "../abstracts/mixins" as m;
+
+.single-product {
+	.shop-wrapper {
+		display: grid;
+		gap: 2rem;
+
+		@include m.respond(md) {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	.woocommerce-product-gallery {
+		img {
+			border-radius: 8px;
+		}
+	}
+
+	.price {
+		font-size: 1.5rem;
+		font-weight: 700;
+		display: block;
+		margin-block: 1rem;
+	}
+}

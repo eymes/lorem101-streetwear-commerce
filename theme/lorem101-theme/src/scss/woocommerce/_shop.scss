@@ -1,0 +1,20 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+.shop-wrapper {
+	@include m.container;
+	padding-block: 2rem;
+}
+
+// WooCommerce renderuje listę produktów jako <ul class="products">
+ul.products {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: v.$gap-base;
+	list-style: none;
+	padding: 0;
+
+	@include m.respond(md) {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}

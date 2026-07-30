@@ -1,0 +1,11 @@
+# środowisko
+.env
+
+# node / build
+node_modules/
+theme/lorem101-theme/dist/
+npm-debug.log*
+
+# system
+.DS_Store
+Thumbs.db

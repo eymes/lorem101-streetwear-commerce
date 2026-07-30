@@ -1,0 +1,62 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: lorem101-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-wordpress}
+      MYSQL_USER: ${DB_USER:-wordpress}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-wordpress}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - lorem101-net
+
+  wordpress:
+    image: wordpress:php8.2-apache
+    container_name: lorem101-wp
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "${WP_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-wordpress}
+      WORDPRESS_DEBUG: 1
+    volumes:
+      - wp_data:/var/www/html
+      # nasz kod z repo, podpięty pod właściwe miejsca w WP - to jedyne co realnie edytujemy
+      - ./theme/lorem101-theme:/var/www/html/wp-content/themes/lorem101-theme
+      - ./plugins/lorem101-drop-manager:/var/www/html/wp-content/plugins/lorem101-drop-manager
+    networks:
+      - lorem101-net
+
+  wpcli:
+    image: wordpress:cli-php8.2
+    container_name: lorem101-wpcli
+    depends_on:
+      - db
+      - wordpress
+    volumes:
+      - wp_data:/var/www/html
+      - ./theme/lorem101-theme:/var/www/html/wp-content/themes/lorem101-theme
+      - ./plugins/lorem101-drop-manager:/var/www/html/wp-content/plugins/lorem101-drop-manager
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-wordpress}
+    networks:
+      - lorem101-net
+    entrypoint: ["tail", "-f", "/dev/null"]
+
+volumes:
+  db_data:
+  wp_data:
+
+networks:
+  lorem101-net:

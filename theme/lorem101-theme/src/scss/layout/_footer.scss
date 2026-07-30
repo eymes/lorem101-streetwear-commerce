@@ -1,0 +1,20 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+.site-footer {
+	border-top: 1px solid v.$color-border;
+	margin-top: 4rem;
+
+	&__inner {
+		@include m.container;
+		padding-block: 2rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	&__menu {
+		display: flex;
+		gap: v.$gap-base;
+	}
+}

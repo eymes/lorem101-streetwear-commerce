@@ -1,0 +1,36 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+.site-header {
+	border-bottom: 1px solid v.$color-border;
+
+	&__inner {
+		@include m.container;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-block: 1rem;
+	}
+
+	&__logo {
+		font-weight: 700;
+		font-size: 1.25rem;
+	}
+
+	&__menu {
+		display: flex;
+		gap: v.$gap-base;
+	}
+
+	&__cart {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1.75rem;
+		height: 1.75rem;
+		border-radius: 50%;
+		background: v.$color-primary;
+		color: #fff;
+		font-size: 0.85rem;
+	}
+}

@@ -1,0 +1,17 @@
+@use "variables" as v;
+
+@mixin container {
+	max-width: v.$container-max;
+	margin-inline: auto;
+	padding-inline: 1rem;
+}
+
+@mixin respond($breakpoint) {
+	@if $breakpoint == sm {
+		@media (min-width: v.$bp-sm) { @content; }
+	} @else if $breakpoint == md {
+		@media (min-width: v.$bp-md) { @content; }
+	} @else if $breakpoint == lg {
+		@media (min-width: v.$bp-lg) { @content; }
+	}
+}

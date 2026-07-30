@@ -1,0 +1,18 @@
+// Kolory
+$color-text: #1a1a1a;
+$color-bg: #ffffff;
+$color-primary: #1c1c1c;
+$color-accent: #d4a94c;
+$color-border: #e5e5e5;
+
+// Typografia
+$font-base: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+// Layout
+$container-max: 1200px;
+$gap-base: 1.5rem;
+
+// Breakpoints (używane w mixins.scss)
+$bp-sm: 480px;
+$bp-md: 768px;
+$bp-lg: 1024px;
