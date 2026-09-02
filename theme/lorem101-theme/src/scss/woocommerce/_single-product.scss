@@ -1,25 +1,375 @@
+@use "../abstracts/variables" as v;
 @use "../abstracts/mixins" as m;
 
-.single-product {
-	.shop-wrapper {
-		display: grid;
-		gap: 2rem;
+.single-product .shop-wrapper {
+	@include m.container;
 
-		@include m.respond(md) {
-			grid-template-columns: 1fr 1fr;
+	padding-block: 2rem 4rem;
+}
+
+.product-single {
+	display: grid;
+	gap: 2rem;
+
+	@include m.respond(md) {
+		grid-template-columns: 1.2fr 1fr;
+		align-items: start;
+		gap: 3rem;
+	}
+
+	// ---- LEWA KOLUMNA: galeria ----
+	&__gallery {
+		.woocommerce-product-gallery {
+			position: relative;
+		}
+
+		// Ikona powiększenia domyślnie jest zwykłym elementem w przepływie
+		// i spycha zdjęcie w dół o własną wysokość - przez to prawa kolumna
+		// zaczynała się wyżej niż zdjęcie. Wyjmujemy ją z przepływu.
+		.woocommerce-product-gallery__trigger {
+			position: absolute;
+			top: 0.6rem;
+			right: 0.6rem;
+			margin: 0;
+			z-index: 2;
+		}
+
+		.woocommerce-product-gallery__image img {
+			width: 100%;
+			height: auto;
+		}
+
+		.flex-control-thumbs {
+			display: grid;
+			grid-template-columns: repeat(5, 1fr);
+			gap: 0.4rem;
+			margin-top: 0.4rem;
+			padding: 0;
+			list-style: none;
+
+			li {
+				cursor: pointer;
+			}
+
+			img {
+				width: 100%;
+				aspect-ratio: 1 / 1;
+				object-fit: cover;
+				transition: opacity 0.3s ease;
+				opacity: 0.55;
+
+				&.flex-active,
+				&:hover {
+					opacity: 1;
+				}
+			}
 		}
 	}
 
-	.woocommerce-product-gallery {
+	// ---- PRAWA KOLUMNA ----
+	&__summary {
+		.product_title {
+			margin: 0 0 0.75rem;
+			font-family: v.$font-base;
+			font-size: 1.5rem;
+			font-weight: 700;
+			line-height: 1.25;
+			color: v.$color-text;
+		}
+
+		.price {
+			display: block;
+			margin: 0 0 1.5rem;
+			font-family: v.$font-base;
+			font-size: 1.1rem;
+			color: v.$color-text;
+		}
+
+		.woocommerce-product-details__short-description {
+			margin-top: 1.5rem;
+			font-family: v.$font-base;
+			font-size: 0.78rem;
+			line-height: 1.7;
+			color: v.$color-text-muted;
+		}
+	}
+}
+
+// ---- Formularz wariantu ----
+.variations {
+	margin-bottom: 1rem;
+	width: 100%;
+	border-collapse: collapse;
+
+	th,
+	td {
+		padding: 0 0 0.75rem;
+		vertical-align: middle;
+		text-align: left;
+	}
+
+	th.label {
+		padding-right: 1rem;
+		width: 22%;
+	}
+
+	.label label {
+		font-family: v.$font-base;
+		font-size: 0.72rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: v.$color-text-muted;
+	}
+
+	// Wiersz z kolorem chowany przez JS (initHideColorRow) - kolor wybiera
+	// się przez kafelki "Inne kolory", nie przez dropdown
+	tr.is-hidden {
+		display: none;
+	}
+}
+
+// Wspólny wygląd pól formularza: dropdowny wariantu ORAZ pole ilości
+.variations select,
+.quantity input[type="number"],
+.quantity .qty {
+	padding: 0.75rem 0.9rem;
+	width: 100%;
+	font-family: v.$font-base;
+	font-size: 0.85rem;
+	border: 1px solid v.$color-border;
+	border-radius: 0;
+	color: v.$color-text;
+	background: transparent;
+	appearance: none;
+	cursor: pointer;
+
+	&:focus {
+		border-color: v.$color-text;
+		outline: none;
+	}
+}
+
+.variations select option {
+	color: v.$color-text;
+	background: v.$color-bg;
+}
+
+// Wyprzedane rozmiary w liście rozwijanej.
+//
+// UWAGA: stylowanie <option> jest ograniczone przez system operacyjny.
+// Kolor działa w Chrome i Firefoksie na Windowsie i Linuksie; przekreślenie
+// bywa ignorowane, a macOS renderuje listy natywnie i pomija oba.
+// Dlatego to wyłącznie podpowiedź wizualna - właściwą informację o braku
+// dostępności niesie napis pod przyciskiem.
+.variations select option.is-sold-out {
+	text-decoration: line-through;
+	color: v.$color-accent;
+}
+
+// Pole rozmiaru w stanie błędu (klasa dodawana przez initSizeValidation)
+.variations select.has-error {
+	border-color: v.$color-accent;
+}
+
+// Kontener, który WooCommerce rozwija animacją po wyborze wariantu.
+//
+// Trzyma cenę wariantu i komunikat o dostępności - u nas oba zbędne: cena
+// jest już nad formularzem, a komunikat budujemy sami pod przyciskiem
+// (watchStockState w main.js). Zostawała więc animacja pustego pudełka,
+// widoczna jako mignięcie przy każdej zmianie rozmiaru.
+//
+// !important jest tu konieczne: jQuery przy animacji ustawia display
+// bezpośrednio na elemencie, a styl inline bije zwykłą regułę z arkusza.
+.woocommerce-variation.single_variation {
+	display: none !important;
+}
+
+// Komunikat o stanie magazynowym pod przyciskiem zakupu
+.variation-stock {
+	margin: 0.75rem 0 0;
+	font-family: v.$font-base;
+	font-size: 0.72rem;
+	letter-spacing: 0.05em;
+	color: v.$color-accent;
+
+	p {
+		margin: 0;
+	}
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+// Pole ilości - stylizowane jak wiersz wariantu, z etykietą po lewej
+.woocommerce-variation-add-to-cart {
+	display: block;
+}
+
+.quantity {
+	display: flex;
+	align-items: center;
+	margin-bottom: 1rem;
+
+	// Etykieta "Ilość" dostawiana przez CSS, bo WooCommerce renderuje
+	// tu tylko ukryty <label> dla czytników ekranu.
+	// flex-basis + padding-right musi odpowiadać th.label w tabeli wariantów,
+	// żeby pola ROZMIAR i ILOŚĆ zaczynały się w tej samej linii pionowej.
+	&::before {
+		content: "ILOŚĆ";
+		flex: 0 0 22%;
+		padding-right: 1rem;
+		font-family: v.$font-base;
+		font-size: 0.72rem;
+		letter-spacing: 0.1em;
+		color: v.$color-text-muted;
+	}
+
+	label {
+		display: none;
+	}
+
+	input {
+		flex: 1;
+	}
+}
+
+// Komunikat pod przyciskiem "dodaj do koszyka"
+.size-error {
+	margin: 0.6rem 0 0;
+	font-family: v.$font-base;
+	font-size: 0.72rem;
+	letter-spacing: 0.05em;
+	color: v.$color-accent;
+
+	// Ten sam element obsługuje potwierdzenie dodania do koszyka -
+	// zmienia się tylko kolor, żeby nie mnożyć elementów w DOM
+	&--success {
+		color: v.$color-text;
+	}
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+// Duży, czerwony przycisk dodania do koszyka - ten sam akcent
+// co tag "DROP 001" na stronie głównej
+.single_add_to_cart_button {
+	padding: 1.1rem 2rem !important;
+	width: 100%;
+	font-size: 0.8rem !important;
+	letter-spacing: 0.2em !important;
+	border-color: v.$color-accent !important;
+	color: v.$color-text !important;
+	background: v.$color-accent !important;
+
+	&:hover {
+		color: v.$color-accent !important;
+		background: transparent !important;
+	}
+}
+
+// ---- Sekcja "Inne kolory" ----
+.other-colors {
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid v.$color-border;
+
+	&__heading {
+		margin: 0 0 0.85rem;
+		font-family: v.$font-base;
+		font-size: 0.72rem;
+		font-weight: 400;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: v.$color-text-muted;
+	}
+
+	&__list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item {
+		width: 76px;
+
+		// height jest podane wprost (a nie przez aspect-ratio), bo obrazki
+		// WooCommerce mają własne atrybuty width/height w HTML, które przy
+		// samym aspect-ratio potrafią rozciągnąć kafelek w pionie.
 		img {
-			border-radius: 8px;
+			width: 82px;
+			height: 82px;
+			object-fit: cover;
+			border: 1px solid transparent;
+			transition: opacity 0.3s ease, border-color 0.3s ease;
+			opacity: 0.8;
+		}
+
+		&:hover img {
+			border-color: v.$color-text;
+			opacity: 1;
 		}
 	}
 
-	.price {
-		font-size: 1.5rem;
-		font-weight: 700;
+	&__name {
 		display: block;
-		margin-block: 1rem;
+		margin-top: 0.3rem;
+		font-family: v.$font-base;
+		font-size: 0.72rem;
+		letter-spacing: 0.05em;
+		text-align: center;
+		color: v.$color-text-muted;
 	}
+}
+
+// ---- Opis pod galerią ----
+.woocommerce-tabs {
+	margin-top: 2.5rem;
+
+	// Przy jednej zakładce pasek nawigacji jest zbędny
+	.wc-tabs {
+		display: none;
+	}
+
+	h2 {
+		margin: 0 0 0.75rem;
+		font-family: v.$font-base;
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: v.$color-text;
+	}
+
+	// Nazwa kolekcji (drop), do której należy produkt - wyróżniona,
+	// bo w sklepie z limitowanymi seriami to istotna informacja
+	.product-collection {
+		margin: 0 0 1rem;
+		font-family: v.$font-base;
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: v.$color-accent;
+	}
+
+	p {
+		margin: 0 0 1rem;
+		font-family: v.$font-base;
+		font-size: 0.8rem;
+		line-height: 1.8;
+		color: v.$color-text-muted;
+	}
+}
+
+// Sekcje "powiązane produkty" / "może ci się spodobać" - na razie ukryte,
+// wrócimy do nich przy dopracowywaniu sklepu
+.related.products,
+.upsells.products {
+	display: none;
 }

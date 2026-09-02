@@ -1,20 +1,71 @@
 @use "../abstracts/variables" as v;
 @use "../abstracts/mixins" as m;
 
+/**
+ * Uniwersalny "sticky footer" - obowiązuje na WSZYSTKICH stronach i WSZYSTKICH
+ * szerokościach ekranu (mobile-first, bez media query - to baza).
+ *
+ * Wcześniej stopkę do dołu przyklejał wyłącznie mechanizm z layout/_fixed-footer.scss,
+ * ale ten działa tylko od tabletu w górę i tylko na stronie głównej/koszyku.
+ * Efekt: na telefonie, przy krótkiej treści (np. pusty koszyk), stopka kończyła
+ * się zaraz po treści, a reszta ekranu w dół zostawała pustą przestrzenią -
+ * nic jej nie domykało do dołu.
+ *
+ * To klasyczny, bezpieczny wzorzec: min-height: 100vh + flex column na <body>,
+ * .site-main rośnie i wypycha stopkę w dół, gdy treści jest mało. Przy długiej
+ * treści (opis produktu) strona i tak przewija się normalnie - to NIE jest
+ * blokada scrolla jak w _fixed-footer.scss, tylko "domknięcie" krótkich stron.
+ */
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+.site-main {
+	flex: 1 0 auto;
+}
+
 .site-footer {
+	flex-shrink: 0;
 	border-top: 1px solid v.$color-border;
-	margin-top: 4rem;
 
 	&__inner {
 		@include m.container;
-		padding-block: 2rem;
+
+		// Stała wysokość - stopka wygląda identycznie niezależnie od tego,
+		// ile produktów jest w aktualnie wybranej kategorii.
 		display: flex;
-		flex-direction: column;
-		gap: 1rem;
+		align-items: center;
+		justify-content: center;
+		height: 4rem;
 	}
 
-	&__menu {
-		display: flex;
-		gap: v.$gap-base;
+	// Tekst i ikona jako jedna grupa, wyśrodkowana razem - a nie tekst
+	// na środku i ikona osobno przy prawej krawędzi.
+	&__row {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+
+	&__copy {
+		margin: 0;
+		font-family: v.$font-base;
+		font-size: 0.72rem;
+		letter-spacing: 0.05em;
+		text-align: center;
+		color: v.$color-text-muted;
+	}
+
+	&__social {
+		display: inline-flex;
+		align-items: center;
+		color: v.$color-text-muted;
+		transition: color 0.3s ease;
+
+		&:hover {
+			color: v.$color-text;
+		}
 	}
 }

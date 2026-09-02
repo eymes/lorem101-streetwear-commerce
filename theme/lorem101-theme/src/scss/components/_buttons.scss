@@ -1,22 +1,39 @@
 @use "../abstracts/variables" as v;
 
-// WooCommerce generuje przyciski z klasami .button / .add_to_cart_button / .checkout-button
-// - stylujemy je globalnie tutaj, żeby nie pisać tego samego w kilku miejscach
+/**
+ * Kolejność właściwości w tym projekcie (obowiązuje we wszystkich plikach SCSS):
+ *  1. position, top/right/bottom/left
+ *  2. display i właściwości układu (flex, grid, align, justify, gap)
+ *  3. margin, padding
+ *  4. width, height
+ *  5. typografia (font, line-height, letter-spacing, text-*)
+ *  6. border, border-radius
+ *  7. color, background
+ *  8. transform, transition, animation
+ *  9. pozostałe (cursor, overflow, opacity...)
+ * 10. z-index
+ */
+
 .button,
 .add_to_cart_button,
 .checkout-button,
 button.button {
 	display: inline-block;
-	padding: 0.75rem 1.5rem;
-	background: v.$color-primary;
-	color: #fff;
-	border: none;
-	border-radius: 4px;
-	font-size: 0.9rem;
+	padding: 0.85rem 2rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
 	text-align: center;
-	transition: background 0.15s ease;
+	text-transform: uppercase;
+	border: 1px solid v.$color-primary;
+	border-radius: 0;
+	color: v.$color-bg;
+	background: v.$color-primary;
+	transition: background 0.3s ease, color 0.3s ease;
+	cursor: pointer;
 
 	&:hover {
-		background: lighten(v.$color-primary, 15%);
+		color: v.$color-primary;
+		background: transparent;
 	}
 }

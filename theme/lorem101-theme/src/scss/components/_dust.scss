@@ -1,0 +1,14 @@
+/**
+ * Warstwa z unoszącym się pyłem - wyłącznie na ekranie wejściowym.
+ *
+ * pointer-events: none sprawia, że warstwa nie przechwytuje kliknięć,
+ * więc przycisk ENTER pod spodem zostaje klikalny.
+ */
+.dust-canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 0;
+}

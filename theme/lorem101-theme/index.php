@@ -1,9 +1,4 @@
 <?php
-/**
- * index.php jest wymagany przez WordPress jako ostateczny fallback
- * w hierarchii szablonów. Dla stron sklepu i produktów WooCommerce
- * i tak użyje archive-product.php / single-product.php (patrz README).
- */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

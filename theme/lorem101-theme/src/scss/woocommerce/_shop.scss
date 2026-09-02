@@ -3,18 +3,37 @@
 
 .shop-wrapper {
 	@include m.container;
+
 	padding-block: 2rem;
 }
 
-// WooCommerce renderuje listę produktów jako <ul class="products">
+// WooCommerce renderuje listę produktów jako <ul class="products">.
 ul.products {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: v.$gap-base;
-	list-style: none;
+	gap: 1.25rem;
 	padding: 0;
+	list-style: none;
 
 	@include m.respond(md) {
 		grid-template-columns: repeat(3, 1fr);
+	}
+
+	@include m.respond(lg) {
+		grid-template-columns: repeat(5, 1fr);
+	}
+
+	// Po wybraniu konkretnej kategorii zwężamy siatkę do czterech kolumn.
+	// Klasę dodaje JS (initCategoryFilter) - CSS nie ma jak sam rozpoznać,
+	// który filtr jest aktywny.
+	&.is-filtered {
+		@include m.respond(lg) {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	// Dodawane/usuwane przez JS (initCategoryFilter w main.js) przy kliknięciu zakładki
+	li.is-hidden {
+		display: none;
 	}
 }

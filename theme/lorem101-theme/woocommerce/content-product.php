@@ -1,16 +1,4 @@
 <?php
-/**
- * Nadpisany szablon: karta produktu w listingu (archiwum sklepu, kategorie).
- * Oryginał: wp-content/plugins/woocommerce/templates/content-product.php
- *
- * ZASADA nadpisywania szablonów WooCommerce:
- * 1. Skopiuj oryginalny plik z woocommerce/templates/... (w folderze wtyczki)
- * 2. Wklej go do motywu, do folderu /woocommerce/ z DOKŁADNIE tą samą
- *    ścieżką względną (bez /templates/ na początku)
- * 3. Edytuj jak chcesz - WooCommerce automatycznie użyje wersji z motywu
- *
- * Poniżej uproszczona, własna wersja karty produktu (zamiast oryginalnych hooków WC).
- */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

@@ -1,12 +1,19 @@
-// Kolory
-$color-text: #1a1a1a;
-$color-bg: #ffffff;
-$color-primary: #1c1c1c;
-$color-accent: #d4a94c;
-$color-border: #e5e5e5;
+// Kolory - ciemna paleta marki
+$color-bg: #141311;          // ciemne, betonowe tło
+$color-bg-alt: #1c1a17;      // lekko jaśniejsze tło (karty, sekcje)
+$color-text: #f5f3ee;        // off-white tekst na ciemnym tle
+$color-text-muted: #8f8d8a;  // wyszarzony tekst (podpisy, drugorzędne info)
+$color-primary: #f5f3ee;     // przyciski/akcje główne (jasne na ciemnym)
+$color-accent: #c23a1f;      // rdzawa czerwień - tagi dropów, alerty, "X left"
+$color-border: #2a2823;      // subtelne linie na ciemnym tle
 
 // Typografia
-$font-base: system-ui, -apple-system, "Segoe UI", sans-serif;
+// $font-base to UI całej strony (nav, taby, przyciski, ceny, tytuły produktów)
+// - monospace, w stylu Supreme/derschutze. $font-display to WYŁĄCZNIE
+// wielki wordmark "LOREM101" w hero - ten zostaje przy grotesque sans.
+$font-base: "Courier New", monospace;
+$font-display: Arial, Helvetica, sans-serif;
+$font-mono: "Courier New", monospace;
 
 // Layout
 $container-max: 1200px;

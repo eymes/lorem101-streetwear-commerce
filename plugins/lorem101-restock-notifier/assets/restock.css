@@ -1,0 +1,75 @@
+/**
+ * Formularz „powiadom mnie".
+ *
+ * Kolory oparte na currentColor i przezroczystościach, żeby wtyczka wtapiała
+ * się w dowolny motyw zamiast narzucać własną paletę.
+ */
+
+.restock-form {
+	margin: 1rem 0;
+	padding: 1rem;
+	border: 1px solid rgba(127, 127, 127, 0.35);
+}
+
+.restock-form[hidden] {
+	display: none;
+}
+
+.restock-form__label {
+	margin: 0 0 0.75rem;
+	font-size: 0.75rem;
+	line-height: 1.6;
+	letter-spacing: 0.05em;
+	opacity: 0.75;
+}
+
+.restock-form__row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.restock-form__input {
+	flex: 1 1 180px;
+	min-width: 0;
+	background: transparent;
+	border: 1px solid rgba(127, 127, 127, 0.35);
+	border-radius: 0;
+	color: inherit;
+	font-family: inherit;
+	font-size: 0.85rem;
+	padding: 0.7rem 0.9rem;
+}
+
+.restock-form__input:focus {
+	outline: none;
+	border-color: currentColor;
+}
+
+.restock-form__button {
+	flex: 0 0 auto;
+}
+
+.restock-form__message {
+	margin: 0.75rem 0 0;
+	font-size: 0.75rem;
+	line-height: 1.6;
+}
+
+.restock-form__message[hidden] {
+	display: none;
+}
+
+.restock-form__message--error {
+	color: #c23a1f;
+}
+
+/* Etykieta dla czytników ekranu - niewidoczna, ale odczytywana */
+.screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	white-space: nowrap;
+}

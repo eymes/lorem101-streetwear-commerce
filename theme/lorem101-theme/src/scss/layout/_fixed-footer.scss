@@ -1,0 +1,145 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+/**
+ * Stopka przypięta na sztywno do dołu ekranu, na wzór prostego prototypu
+ * (position: fixed) zamiast poprzednich podejść przez łańcuch flex.
+ *
+ * Różnica względem wcześniejszych, kilkukrotnie psujących się prób: stopka
+ * jest tu całkowicie WYJĘTA z przepływu i z łańcucha flex. Nie musi "wiedzieć"
+ * o reszcie layoutu (żadnego flex-shrink: 0, żadnego przekazywania wysokości
+ * przez min-height: 0 w kilku miejscach na raz) - po prostu zawsze siedzi
+ * na dole, a reszta strony dostaje dokładnie tyle miejsca, ile zostaje.
+ *
+ * Dotyczy WYŁĄCZNIE strony głównej i koszyka - miejsc, gdzie treść ma
+ * z góry znaną, ograniczoną objętość. Karta produktu (opis, tabela rozmiarów,
+ * sekcja kolorów) i pozostałe strony scrollują normalnie, bez tego mechanizmu.
+ *
+ * Włączone dopiero od tabletu w górę - na telefonie zagnieżdżone przewijanie
+ * jest uciążliwe, łatwo trafić palcem w zły obszar.
+ *
+ * GDYBY SIĘ ROZJECHAŁO: usuń import "layout/fixed-footer" z main.scss.
+ * Stopka wróci do zwykłego, płynącego układu, reszta motywu zostaje nietknięta.
+ */
+
+// Wysokość stopki w jednym miejscu - używana zarówno do position: fixed,
+// jak i do wyliczenia miejsca zostawionego nad nią.
+$footer-height: 4rem;
+
+@include m.respond(md) {
+	body.home,
+	body.woocommerce-cart {
+		// Strona nie przewija się jako całość - przewija się tylko
+		// wyznaczony obszar w środku (panel produktów albo lista koszyka).
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+		overflow: hidden;
+
+		// Pasek administratora WordPressa zajmuje 32 px u góry ekranu.
+		// Bez korekty ostatni fragment treści wypadałby pod dolną krawędź.
+		&.admin-bar {
+			height: calc(100vh - 32px);
+		}
+
+		.site-header {
+			position: static; // bez sticky - strona i tak się nie przewija
+			flex-shrink: 0;
+		}
+
+		.site-main {
+			display: flex;
+			flex: 1 1 auto;
+			flex-direction: column;
+			// Miejsce na stopkę, która stoi obok (position: fixed),
+			// a nie w tym samym przepływie
+			padding-bottom: #{$footer-height};
+			min-height: 0;
+			overflow: hidden;
+		}
+	}
+
+	// Strona główna: przewija się panel z produktami. Hero i taby
+	// trzymają naturalną wysokość, reszta miejsca idzie do panelu.
+	body.home {
+		.hero,
+		.category-tabs {
+			flex-shrink: 0;
+		}
+
+		.shop-grid {
+			display: flex;
+			flex: 1 1 auto;
+			flex-direction: column;
+			// Odstęp między dolną krawędzią przewijanego panelu a stopką -
+			// bez tego panel dochodzi do samej krawędzi stopki.
+			padding-bottom: 0.5rem;
+			// width: 100% z tego samego powodu co przy .page-wrapper niżej -
+			// margin: auto z mixinu container() wyłącza domyślne rozciąganie
+			// elementu flex na osi poprzecznej.
+			width: 100%;
+			min-height: 0;
+		}
+
+		.shop-grid__scroll {
+			flex: 1 1 auto;
+			min-height: 0;
+			// overflow-x jawnie: specyfikacja CSS każe przeglądarce dorobić
+			// auto na tej osi, gdy druga ma wartość inną niż visible - bez
+			// tego pojawia się niechciany poziomy scroll.
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+	}
+
+	// Koszyk: przewija się treść strony (lista pozycji, podsumowanie).
+	body.woocommerce-cart {
+		.page-wrapper {
+			flex: 1 1 auto;
+			// KLUCZOWE: .page-wrapper ma margin-inline: auto z mixinu container()
+			// (do centrowania). Element flex z automatycznymi marginesami na osi
+			// poprzecznej NIE rozciąga się domyślnie na pełną szerokość rodzica -
+			// auto-marginesy wyłączają stretch, a przeglądarka liczy szerokość
+			// na podstawie samej zawartości (shrink-to-fit). Przy pionowo
+			// ułożonym tekście dawało to wąską kolumnę zamiast pełnej szerokości.
+			// width: 100% wymusza pełną szerokość, max-width nadal ogranicza,
+			// a margin: auto nadal centruje - dokładnie jak przed zmianą.
+			width: 100%;
+			min-height: 0;
+			overflow-x: hidden;
+			overflow-y: auto;
+			scrollbar-width: thin;
+			scrollbar-color: v.$color-border transparent;
+
+			&::-webkit-scrollbar {
+				width: 6px;
+			}
+
+			&::-webkit-scrollbar-thumb {
+				background: v.$color-border;
+			}
+
+			&::-webkit-scrollbar-track {
+				background: transparent;
+			}
+		}
+	}
+
+	// Stopka: fixed, zawsze na dole, poza przepływem obu stron.
+	body.home,
+	body.woocommerce-cart {
+		.site-footer {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: #{$footer-height};
+			background: v.$color-bg;
+			z-index: 100;
+
+			&__inner {
+				height: 100%;
+			}
+		}
+	}
+}

@@ -1,0 +1,148 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+.entrance-gate {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: v.$color-bg;
+	transition: opacity 0.4s ease;
+	z-index: 999;
+
+	&.is-hidden {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	&__content {
+		position: relative;
+		padding: 2rem;
+		text-align: center;
+		z-index: 1;
+	}
+
+	// Ta sama zasada co w hero: wordmark = font-display (grotesque sans),
+	// wszystko inne (podpis, przycisk, loading) = font-base (monospace).
+	&__logo {
+		margin: 0;
+		font-family: v.$font-display;
+		font-size: clamp(2.5rem, 10vw, 5rem);
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: 0.05em;
+		color: v.$color-text;
+	}
+
+	&__subtitle {
+		margin: 1rem 0 2.5rem;
+		font-family: v.$font-base;
+		font-size: 0.875rem;
+		letter-spacing: 0.35em;
+		text-transform: uppercase;
+		color: v.$color-text-muted;
+	}
+
+	&__button {
+		padding: 1rem 3rem;
+		font-family: v.$font-base;
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		border: 1px solid v.$color-text;
+		border-radius: 0;
+		color: v.$color-text;
+		background: transparent;
+		transition: background 0.3s ease, color 0.3s ease;
+		cursor: pointer;
+
+		&:hover {
+			color: v.$color-bg;
+			background: v.$color-text;
+		}
+	}
+
+	&__loading {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: v.$color-bg;
+		transition: opacity 0.3s ease;
+		opacity: 0;
+		pointer-events: none;
+		z-index: 2;
+
+		// Napis jest "wtopiony" w tło: kolor tekstu bierzemy z gradientu,
+		// który po lewej jest jasny, a po prawej niemal zlewa się z tłem.
+		//
+		// background-clip: text sprawia, że gradient wypełnia same litery
+		// zamiast prostokąta za nimi - dlatego color musi być przezroczysty,
+		// inaczej zasłoniłby gradient.
+		//
+		// Animujemy background-position, więc granica jasnego i ciemnego
+		// przesuwa się przez napis od lewej do prawej, jak pasek postępu.
+		span {
+			font-family: v.$font-base;
+			font-size: clamp(1.5rem, 5vw, 2.25rem);
+			font-weight: 700;
+			letter-spacing: 0.3em;
+			text-transform: uppercase;
+			color: transparent;
+			background-image: linear-gradient(
+				90deg,
+				v.$color-text 0%,
+				v.$color-text 50%,
+				v.$color-border 50%,
+				v.$color-border 100%
+			);
+			background-repeat: no-repeat;
+			background-position: 100% 0;
+			background-size: 200% 100%;
+			-webkit-background-clip: text;
+			background-clip: text;
+		}
+	}
+
+	&.is-loading &__content {
+		opacity: 0;
+	}
+
+	&.is-loading &__loading {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	// Animację przypisujemy DOPIERO przy klasie is-loading (dodaje ją JS
+	// po kliknięciu ENTER).
+	//
+	// Gdyby siedziała bezpośrednio na span, odtworzyłaby się od razu po
+	// wczytaniu strony - animacje CSS startują w momencie wyrenderowania
+	// elementu, a nie wtedy, gdy staje się widoczny. Element loadingu
+	// istnieje w HTML od początku, tylko z opacity: 0, więc animacja
+	// kończyłaby się zanim ktokolwiek zdąży kliknąć.
+	&.is-loading &__loading span {
+		// Czas odpowiada opóźnieniu w initEntranceGate (main.js) - napis
+		// kończy się rozjaśniać dokładnie wtedy, gdy bramka znika
+		animation: lorem101-loading-sweep 1.2s ease-out forwards;
+	}
+}
+
+body.entrance-gate-active {
+	overflow: hidden;
+}
+
+// Przesuwa granicę jasnego i ciemnego przez napis: od prawej krawędzi
+// gradientu (cały napis wtopiony) do lewej (cały rozjaśniony).
+@keyframes lorem101-loading-sweep {
+	from {
+		background-position: 100% 0;
+	}
+
+	to {
+		background-position: 0 0;
+	}
+}

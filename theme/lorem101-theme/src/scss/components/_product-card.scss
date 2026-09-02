@@ -1,12 +1,19 @@
 @use "../abstracts/variables" as v;
 
+// Cała karta to jeden klikalny obszar (link) - bez osobnego przycisku,
+// zgodnie z ustaleniem: "można kliknąć w dany produkt i tyle".
 .product-card {
 	list-style: none;
 
+	&__link {
+		display: block;
+	}
+
 	&__image {
+		position: relative;
 		aspect-ratio: 1 / 1;
-		overflow: hidden;
 		background: #f5f5f5;
+		overflow: hidden;
 
 		img {
 			width: 100%;
@@ -15,22 +22,38 @@
 		}
 	}
 
+	// Oznaczenie najnowszej kolekcji - lewy górny róg zdjęcia
+	&__badge {
+		position: absolute;
+		top: 0.2rem;
+		left: 0.2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.14rem 0.32rem;
+		font-family: v.$font-base;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.14rem;
+		text-transform: uppercase;
+		color: #000;
+		background: v.$color-accent;
+		z-index: 1;
+	}
+
 	&__title {
-		font-size: 0.95rem;
-		margin-top: 0.75rem;
+		margin-top: 0.6rem;
+		font-family: v.$font-base;
+		font-size: 0.72rem;
+		letter-spacing: 0.02em;
+		color: v.$color-text;
 	}
 
 	&__price {
 		display: block;
-		margin-top: 0.25rem;
-		font-weight: 600;
-	}
-
-	&__actions {
-		margin-top: 0.75rem;
-
-		.add_to_cart_button {
-			width: 100%;
-		}
+		margin-top: 0.2rem;
+		font-family: v.$font-base;
+		font-size: 0.72rem;
+		color: v.$color-text-muted;
 	}
 }

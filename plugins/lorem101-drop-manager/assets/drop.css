@@ -1,0 +1,15 @@
+/**
+ * Style wtyczki Drop Manager.
+ *
+ * Minimalne i oparte na przezroczystościach, żeby wtyczka wtapiała się
+ * w dowolny motyw zamiast narzucać własną paletę. Motyw może je nadpisać.
+ */
+
+.lorem101-drop__stock {
+	margin: 0.75rem 0;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #c23a1f;
+}

@@ -1,0 +1,55 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+/**
+ * Dopasowanie strony głównej do wysokości okna.
+ *
+ * Cel: nagłówek, sekcja z nazwą marki, zakładki i stopka są nieruchome,
+ * a panel z produktami wypełnia dokładnie tyle miejsca, ile zostanie -
+ * bez przewijania całej strony.
+ *
+ * Działa tylko na stronie głównej (klasa .home dodawana przez WordPress).
+ * Karta produktu i koszyk przewijają się normalnie, bo tam treść bywa
+ * dłuższa niż ekran i ograniczanie jej nie miałoby sensu.
+ *
+ * ---
+ * GDYBY SIĘ ROZJECHAŁO: usuń import "layout/landing-height" z main.scss.
+ * Siatka wróci do zachowania sprzed zmiany, reszta zostanie nietknięta.
+ *
+ * Historia: to podejście trzy razy psuło szerokość siatki, gdy używała
+ * repeat(auto-fit, ...) - kolumny zwijały się przy ograniczonej wysokości.
+ * Po przejściu na sztywne repeat(5, 1fr) problem powinien zniknąć.
+ * ---
+ */
+
+body.home {
+	// Domyślnie treść tylko rośnie (flex: 1 0 auto z _footer.scss).
+	// Tutaj pozwalamy jej też się skurczyć, żeby zmieściła się w oknie.
+	.site-main {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	// min-height: 0 jest tu konieczne. Bez niego element flex nie zmniejszy
+	// się poniżej rozmiaru swojej zawartości, więc zamiast przewijać
+	// wewnątrz - rozepchnąłby stronę.
+	.shop-grid {
+		flex: 1 1 auto;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+		padding-bottom: 1rem;
+	}
+
+	.category-tabs {
+		flex: 0 0 auto;
+	}
+
+	// Panel przejmuje całą pozostałą wysokość zamiast sztywnych 55vh
+	.shop-grid__scroll {
+		flex: 1 1 auto;
+		height: auto;
+		min-height: 0;
+	}
+}

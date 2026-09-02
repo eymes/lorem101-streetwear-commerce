@@ -1,19 +1,268 @@
+@use "../abstracts/variables" as v;
 @use "../abstracts/mixins" as m;
 
-.woocommerce-cart, .woocommerce-checkout {
-	.shop-wrapper {
-		@include m.container;
-		padding-block: 2rem;
+// Wrapper stron (koszyk, checkout, regulamin itd.)
+.page-wrapper {
+	@include m.container;
+
+	padding-block: 2.5rem 4rem;
+
+	&__title {
+		margin: 0 0 2rem;
+		font-family: v.$font-base;
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: v.$color-text;
+	}
+}
+
+// ---------------------------------------------------------------
+// Bloki koszyka i checkoutu (WooCommerce Blocks)
+//
+// WooCommerce od wersji 8.3 renderuje koszyk i checkout jako bloki
+// Gutenberga, a nie stare shortcode'y - stąd klasy .wc-block-*.
+// Domyślnie zakładają jasny motyw, więc pola formularzy przychodzą
+// z białym tłem. Poniżej sprowadzamy je do ciemnej palety marki.
+//
+// Stąd też duża liczba !important: bloki wstrzykują własne style
+// o wysokiej specyficzności i inaczej się ich nie nadpisze.
+// ---------------------------------------------------------------
+
+.wc-block-components-main,
+.wc-block-cart,
+.wc-block-checkout {
+	font-family: v.$font-base;
+	color: v.$color-text;
+}
+
+// Nagłówki sekcji ("Contact information", "Shipping address", "Cart totals")
+.wc-block-components-title,
+.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-title {
+	font-family: v.$font-base !important;
+	font-size: 0.95rem !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: v.$color-text !important;
+}
+
+// ---- Pola formularza: ciemne tło zamiast domyślnego białego ----
+.wc-block-components-text-input input[type="text"],
+.wc-block-components-text-input input[type="email"],
+.wc-block-components-text-input input[type="tel"],
+.wc-block-components-text-input input[type="number"],
+.wc-block-components-textarea,
+.wc-blocks-components-select .wc-blocks-components-select__container,
+.wc-block-components-combobox .components-form-token-field__input-container {
+	font-family: v.$font-base !important;
+	font-size: 0.85rem !important;
+	border: 1px solid v.$color-border !important;
+	border-radius: 0 !important;
+	color: v.$color-text !important;
+	background: v.$color-bg-alt !important;
+}
+
+.wc-block-components-text-input input:focus,
+.wc-blocks-components-select__select:focus {
+	border-color: v.$color-text !important;
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+// Etykiety pływające wewnątrz pól
+.wc-block-components-text-input label,
+.wc-blocks-components-select__label,
+.wc-block-components-combobox label {
+	font-family: v.$font-base !important;
+	font-size: 0.78rem !important;
+	color: v.$color-text-muted !important;
+}
+
+// Lista rozwijana (kraj) - natywny select
+.wc-blocks-components-select__select {
+	font-family: v.$font-base !important;
+	border: none !important;
+	color: v.$color-text !important;
+	background: v.$color-bg-alt !important;
+
+	option {
+		color: v.$color-text;
+		background: v.$color-bg;
+	}
+}
+
+// ---- Podsumowanie zamówienia / koszyka ----
+.wp-block-woocommerce-checkout-order-summary-block,
+.wc-block-cart__totals-title,
+.wc-block-components-totals-wrapper {
+	border-color: v.$color-border !important;
+}
+
+.wp-block-woocommerce-checkout-order-summary-block {
+	border: 1px solid v.$color-border !important;
+	background: v.$color-bg-alt;
+}
+
+.wc-block-components-totals-item__label,
+.wc-block-components-totals-item__value,
+.wc-block-components-product-name,
+.wc-block-components-product-price,
+.wc-block-components-product-metadata {
+	font-family: v.$font-base !important;
+	color: v.$color-text !important;
+}
+
+.wc-block-components-product-metadata,
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__label {
+	color: v.$color-text-muted !important;
+}
+
+// Licznik sztuk na miniaturze produktu w podsumowaniu zamówienia.
+// Domyślnie jest jasny na jasnym tle miniatury i praktycznie niewidoczny -
+// zmieniamy na czerwone kółko z białą liczbą, spójnie z ikoną w nagłówku.
+.wc-block-components-order-summary-item__quantity {
+	min-width: 18px;
+	height: 18px;
+	font-family: v.$font-base !important;
+	font-size: 0.65rem !important;
+	font-weight: 700 !important;
+	line-height: 18px;
+	border-radius: 9px;
+	border-color: v.$color-accent !important;
+	color: #fff !important;
+	background: v.$color-accent !important;
+	box-shadow: none !important;
+}
+
+// ---------------------------------------------------------------
+// Pusty koszyk
+//
+// Domyślnie WooCommerce pokazuje tu ikonę, angielski komunikat, separator
+// oraz sekcję "New in store" z propozycjami produktów. Chcemy wyłącznie
+// ikonę i jedno zdanie - dlatego chowamy całą oryginalną zawartość bloku
+// i budujemy własną przez ::before (ikona) i ::after (tekst).
+//
+// Ikona to inline SVG w data-URI: czerwony kontur i rysy, wypełnienie
+// w kolorze tła strony ($color-bg), plus łza pod lewym okiem.
+// ---------------------------------------------------------------
+
+// Ukrycie nagłówka "Cart" gdy koszyk jest pusty.
+//
+// Robimy to selektorem :has() zamiast warunkiem w PHP, bo blok koszyka
+// renderuje się po stronie przeglądarki (React) - w momencie generowania
+// HTML przez PHP stan koszyka bywa jeszcze nieaktualny. Tutaj reagujemy
+// na to, co faktycznie znalazło się na stronie.
+body:has(.wp-block-woocommerce-empty-cart-block) .page-wrapper__title {
+	display: none;
+}
+
+.wp-block-woocommerce-empty-cart-block {
+	padding: 4rem 1rem 5rem;
+	text-align: center;
+
+	// Chowamy wszystko, co WooCommerce wyrenderowało w środku
+	// (nagłówek, separator, propozycje produktów, link powrotu)
+	> * {
+		display: none !important;
 	}
 
-	table.shop_table {
-		width: 100%;
-		border-collapse: collapse;
-
-		th, td {
-			padding: 0.75rem;
-			border-bottom: 1px solid #eee;
-			text-align: left;
-		}
+	&::before {
+		content: "";
+		display: block;
+		margin: 0 auto 1.5rem;
+		width: 96px;
+		height: 96px;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><circle cx='24' cy='24' r='21' fill='%23141311' stroke='%23c23a1f' stroke-width='2.5'/><circle cx='17' cy='19' r='2.5' fill='%23c23a1f'/><circle cx='31' cy='19' r='2.5' fill='%23c23a1f'/><path d='M17 24c0 3 2 5 2 7a2 2 0 0 1-4 0c0-2 2-4 2-7z' fill='%23c23a1f'/><path d='M16 34c2.5-4 5.5-6 8-6s5.5 2 8 6' fill='none' stroke='%23c23a1f' stroke-width='2.5' stroke-linecap='round'/></svg>");
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
 	}
+
+	&::after {
+		content: "Twój koszyk jest pusty";
+		display: block;
+		font-family: v.$font-base;
+		font-size: 0.95rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: v.$color-text;
+	}
+}
+
+// ---- Tabela produktów w koszyku ----
+.wc-block-cart-items,
+.wc-block-cart-items__row,
+.wc-block-cart-items th,
+.wc-block-cart-items td {
+	border-color: v.$color-border !important;
+	color: v.$color-text;
+}
+
+.wc-block-cart-items__header {
+	font-family: v.$font-base !important;
+	font-size: 0.72rem !important;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: v.$color-text-muted !important;
+}
+
+// Pole ilości przy produkcie
+.wc-block-components-quantity-selector {
+	border: 1px solid v.$color-border !important;
+	border-radius: 0 !important;
+
+	input,
+	button {
+		font-family: v.$font-base !important;
+		color: v.$color-text !important;
+		background: transparent !important;
+	}
+}
+
+// ---- Przyciski (Proceed to Checkout, Place order) ----
+.wc-block-cart__submit-button,
+.wc-block-components-checkout-place-order-button {
+	padding: 1.1rem 2rem !important;
+	font-family: v.$font-base !important;
+	font-size: 0.8rem !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.2em !important;
+	text-transform: uppercase;
+	border: 1px solid v.$color-accent !important;
+	border-radius: 0 !important;
+	color: v.$color-text !important;
+	background: v.$color-accent !important;
+
+	&:hover {
+		color: v.$color-accent !important;
+		background: transparent !important;
+	}
+}
+
+// Opcje wysyłki / płatności
+.wc-block-components-radio-control__option,
+.wc-block-components-shipping-rates-control__package {
+	border-color: v.$color-border !important;
+	color: v.$color-text;
+}
+
+.wc-block-components-radio-control__label,
+.wc-block-components-radio-control__secondary-label {
+	font-family: v.$font-base !important;
+	color: v.$color-text !important;
+}
+
+// Panel kuponu
+.wc-block-components-panel__button {
+	font-family: v.$font-base !important;
+	color: v.$color-text !important;
+}
+
+// Komunikaty (np. brak metody płatności) - zostawiamy czytelne,
+// tylko dopasowujemy typografię
+.wc-block-components-notice-banner {
+	font-family: v.$font-base !important;
+	border-radius: 0 !important;
 }

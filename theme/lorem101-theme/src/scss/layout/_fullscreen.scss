@@ -1,0 +1,73 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+/**
+ * Układ pełnoekranowy: strona mieści się w oknie, bez paska przewijania
+ * po prawej stronie. Przewija się wyłącznie wskazany obszar wewnątrz.
+ *
+ * Dotyczy strony głównej i koszyka - miejsc, gdzie treść ma z góry znaną,
+ * ograniczoną objętość. Karta produktu jest z tego wyłączona celowo:
+ * opis, tabela rozmiarów i sekcja z kolorami wymagają przewijania strony,
+ * a wciskanie ich w jeden ekran zaszkodziłoby czytelności.
+ *
+ * Włączone dopiero od tabletu w górę. Na telefonie zagnieżdżone przewijanie
+ * jest uciążliwe - łatwo trafić palcem w zły obszar i utknąć.
+ */
+
+@include m.respond(md) {
+	body.home,
+	body.woocommerce-cart {
+		height: 100vh;
+		overflow: hidden;
+	}
+
+	// Pasek administratora zabiera 32 px u góry, więc okno dla treści
+	// jest o tyle niższe. Bez tej korekty stopka chowałaby się pod krawędzią.
+	body.admin-bar.home,
+	body.admin-bar.woocommerce-cart {
+		height: calc(100vh - 32px);
+	}
+
+	// Strona główna: przewija się panel z produktami (reguły w
+	// components/_category-tabs.scss). Tutaj domykamy łańcuch, żeby
+	// nadmiar treści nie wypchnął stopki poza widok.
+	body.home .site-main {
+		overflow: hidden;
+	}
+
+	// Koszyk: przewija się obszar z treścią, nagłówek i stopka stoją.
+	//
+	// min-height: 0 jest konieczne - element flex domyślnie nie kurczy się
+	// poniżej rozmiaru zawartości, więc bez tego zamiast przewijać się
+	// w środku, rozepchnąłby stronę.
+	body.woocommerce-cart .site-main {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	body.woocommerce-cart .page-wrapper {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+		// Patrz komentarz w _cart.scss - bez overflow-x: hidden przeglądarka
+		// sama dokleja poziomy pasek przewijania.
+		overflow-x: hidden;
+
+		scrollbar-width: thin;
+		scrollbar-color: v.$color-border transparent;
+
+		&::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: v.$color-border;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: transparent;
+		}
+	}
+}

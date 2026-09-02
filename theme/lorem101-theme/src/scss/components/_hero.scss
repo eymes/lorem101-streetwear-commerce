@@ -1,0 +1,58 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+.hero {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1.5rem 1.4rem;
+	text-align: center;
+	background: v.$color-bg;
+
+	&__tag {
+		display: inline-block;
+		margin-bottom: 1rem;
+		padding: 0.35rem 0.8rem;
+		font-family: v.$font-base;
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: v.$color-text;
+		background: v.$color-accent;
+	}
+
+	// Liczby w odliczaniu - tabular-nums sprawia, że wszystkie cyfry mają
+	// tę samą szerokość, więc tag nie "drga" przy każdej zmianie sekundy
+	&__countdown {
+		font-variant-numeric: tabular-nums;
+	}
+
+	// Jedyne miejsce w całym motywie, gdzie świadomie NIE używamy $font-base
+	// (monospace) - wordmark marki zostaje przy grotesque sans, tak jak
+	// ustaliliśmy. Wszystko dookoła (taby, ceny, przyciski) jest monospace.
+	&__title {
+		margin: 0 0 0.6rem;
+		font-family: v.$font-display;
+		font-size: clamp(2rem, 6vw, 3.25rem);
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+		color: v.$color-text;
+	}
+
+	&__subtitle {
+		margin: 0;
+		font-family: v.$font-base;
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: v.$color-text-muted;
+	}
+
+	&__collection {
+		font-weight: 700;
+		color: v.$color-text;
+	}
+}

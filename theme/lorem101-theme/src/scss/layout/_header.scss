@@ -2,35 +2,77 @@
 @use "../abstracts/mixins" as m;
 
 .site-header {
+	// Nagłówek przyklejony do góry ekranu - koszyk zostaje w zasięgu
+	// niezależnie od tego, jak daleko użytkownik przewinie stronę.
+	position: sticky;
+	top: 0;
 	border-bottom: 1px solid v.$color-border;
+	background: v.$color-bg;
+	z-index: 100;
+
+	// Po zalogowaniu pasek administratora WordPressa zajmuje górę ekranu,
+	// więc nagłówek musi przykleić się pod nim, a nie za nim.
+	.admin-bar & {
+		top: 32px;
+
+		@media screen and (max-width: 782px) {
+			top: 46px;
+		}
+	}
 
 	&__inner {
 		@include m.container;
+
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding-block: 1rem;
+		padding-block: 0.65rem;
 	}
 
 	&__logo {
-		font-weight: 700;
-		font-size: 1.25rem;
-	}
+		font-family: v.$font-base;
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: v.$color-text-muted;
 
-	&__menu {
-		display: flex;
-		gap: v.$gap-base;
+		&:hover {
+			color: v.$color-text;
+		}
 	}
 
 	&__cart {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 1.75rem;
-		height: 1.75rem;
-		border-radius: 50%;
-		background: v.$color-primary;
+		padding: 0.25rem;
+		color: v.$color-text;
+
+		&:hover {
+			color: v.$color-text-muted;
+		}
+	}
+
+	&__cart-icon {
+		display: block;
+	}
+
+	// Licznik na ikonie - czerwone kółko w prawym górnym rogu
+	&__cart-count {
+		position: absolute;
+		top: -2px;
+		right: -4px;
+		padding: 0 4px;
+		min-width: 16px;
+		height: 16px;
+		font-family: v.$font-base;
+		font-size: 0.6rem;
+		font-weight: 700;
+		line-height: 16px;
+		text-align: center;
+		border-radius: 8px;
 		color: #fff;
-		font-size: 0.85rem;
+		background: v.$color-accent;
 	}
 }

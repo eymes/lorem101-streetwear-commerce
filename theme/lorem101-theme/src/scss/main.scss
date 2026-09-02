@@ -7,6 +7,11 @@
 @use "layout/footer";
 @use "components/product-card";
 @use "components/buttons";
+@use "components/entrance-gate";
+@use "components/hero";
+@use "components/dust";
+@use "components/category-tabs";
 @use "woocommerce/shop";
 @use "woocommerce/single-product";
 @use "woocommerce/cart";
+@use "woocommerce/order";

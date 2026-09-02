@@ -9,6 +9,3 @@ Requires PHP: 8.0
 Text Domain: lorem101-theme
 Requires Plugins: woocommerce
 */
-
-/* Ten plik celowo zostaje pusty poza nagłówkiem - realny CSS
-   generuje się z src/scss/main.scss do dist/main.css (patrz inc/enqueue.php) */

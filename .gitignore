@@ -9,3 +9,6 @@ npm-debug.log*
 # system
 .DS_Store
 Thumbs.db
+
+# prywatne notatki (nie trafiają do repo)
+NOTATKI.md

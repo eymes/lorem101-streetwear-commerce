@@ -2,7 +2,7 @@
 /**
  * Plugin Name: LOREM101 Drop Manager
  * Plugin URI: https://github.com/twoj-user/lorem101-streetwear-commerce
- * Description: Zarządzanie limitowanymi kolekcjami (dropami) dla sklepu LOREM101 - daty startu/końca, countdown, limit sztuk, status dostępności.
+ * Description: Zarządzanie limitowanymi kolekcjami (dropami) dla sklepu LOREM101.
  * Version: 0.1.0
  * Author: Twoje Imię
  * Text Domain: lorem101-drop-manager
@@ -17,9 +17,6 @@ define( 'LOREM101_DROP_MANAGER_VERSION', '0.1.0' );
 define( 'LOREM101_DROP_MANAGER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LOREM101_DROP_MANAGER_URL', plugin_dir_url( __FILE__ ) );
 
-/**
- * Sprawdzenie czy WooCommerce jest aktywne - bez tego plugin nie ma sensu działać.
- */
 function lorem101_drop_manager_check_woocommerce() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		add_action( 'admin_notices', function () {
@@ -31,7 +28,20 @@ function lorem101_drop_manager_check_woocommerce() {
 	}
 	return true;
 }
-add_action( 'plugins_loaded', 'lorem101_drop_manager_check_woocommerce' );
 
-// Kolejne moduły pluginu (meta box dropu, countdown, REST endpoints, notify-me)
-// będziemy dokładać tutaj w kolejnych fazach jako osobne pliki w /includes/
+/**
+ * Wczytujemy moduły dopiero po potwierdzeniu, że WooCommerce działa -
+ * inaczej wywołania wc_get_product() itp. wywaliłyby stronę błędem
+ * krytycznym, gdyby ktoś wyłączył WooCommerce zostawiając naszą wtyczkę.
+ */
+function lorem101_drop_manager_init() {
+	if ( ! lorem101_drop_manager_check_woocommerce() ) {
+		return;
+	}
+
+	require_once LOREM101_DROP_MANAGER_DIR . 'includes/taxonomy.php';
+	require_once LOREM101_DROP_MANAGER_DIR . 'includes/drop-status.php';
+	require_once LOREM101_DROP_MANAGER_DIR . 'includes/frontend.php';
+	require_once LOREM101_DROP_MANAGER_DIR . 'includes/hero.php';
+}
+add_action( 'plugins_loaded', 'lorem101_drop_manager_init' );

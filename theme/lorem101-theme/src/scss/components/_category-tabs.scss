@@ -1,0 +1,72 @@
+@use "../abstracts/variables" as v;
+@use "../abstracts/mixins" as m;
+
+.shop-grid {
+	margin: 0 auto;
+	padding: 1.5rem 1.2rem 3rem;
+	max-width: v.$container-max;
+}
+
+// Przewijalny panel z produktami - własny scrollbar, ograniczona wysokość.
+//
+// Świadomie sztywne 55vh, a NIE mechanizm oparty na blokadzie przewijania
+// całej strony (to podejście - overflow: hidden na <body>, height: 100vh,
+// łańcuch flex - psuło się wielokrotnie i finalnie zostało usunięte).
+// Tutaj strona wokół panelu przewija się całkiem normalnie; ograniczoną
+// wysokość ma wyłącznie ten jeden element.
+//
+// Mobile-first: na telefonie panel ma naturalną wysokość i przewija się
+// razem ze stroną - zagnieżdżone przewijanie na małym ekranie jest
+// uciążliwe. Osobny scroll włączamy dopiero od tabletu w górę.
+.shop-grid__scroll {
+	scrollbar-color: v.$color-border transparent;
+
+	@include m.respond(md) {
+		height: 57vh;
+		padding-right: 0.5rem; // żeby scrollbar nie nachodził na kafelki
+		overflow-y: auto;
+	}
+
+	&::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: v.$color-border;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+}
+
+.category-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-bottom: 1rem;
+
+	&__item {
+		padding: 0;
+		font-family: v.$font-base;
+		font-size: 0.7rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		border: none;
+		border-bottom: 1px solid transparent;
+		color: v.$color-text-muted;
+		background: none;
+		transition: color 0.3s ease, border-color 0.3s ease;
+		cursor: pointer;
+
+		&:hover {
+			color: v.$color-text;
+		}
+
+		&.is-active {
+			font-weight: 700;
+			border-color: v.$color-accent;
+			color: v.$color-text;
+		}
+	}
+}

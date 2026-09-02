@@ -18,7 +18,10 @@ services:
     container_name: lorem101-wp
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_started
+      permissions-fix:
+        condition: service_completed_successfully
     ports:
       - "${WP_PORT:-8080}:80"
     environment:
@@ -29,22 +32,45 @@ services:
       WORDPRESS_DEBUG: 1
     volumes:
       - wp_data:/var/www/html
-      # nasz kod z repo, podpięty pod właściwe miejsca w WP - to jedyne co realnie edytujemy
       - ./theme/lorem101-theme:/var/www/html/wp-content/themes/lorem101-theme
       - ./plugins/lorem101-drop-manager:/var/www/html/wp-content/plugins/lorem101-drop-manager
+      - ./plugins/lorem101-demo-mode:/var/www/html/wp-content/plugins/lorem101-demo-mode
+      - ./plugins/lorem101-restock-notifier:/var/www/html/wp-content/plugins/lorem101-restock-notifier
+    networks:
+      - lorem101-net
+
+  # Jednorazowy kontener uruchamiany przed wordpress/wpcli - wyrównuje uprawnienia
+  # na wolumenie, bo obrazy wordpress (Debian, uid www-data=33) i wordpress:cli
+  # (Alpine, uid www-data=82) różnią się numeracją tego samego użytkownika.
+  # Bez tego WP-CLI dostaje "Permission denied" przy instalacji wtyczek / edycji
+  # wp-config.php. Uruchamia się raz przy każdym `docker compose up`, kończy się
+  # od razu (exit 0) - nie zajmuje zasobów w tle.
+  permissions-fix:
+    image: alpine:3.20
+    volumes:
+      - wp_data:/var/www/html
+    command: >
+      sh -c "chmod -R 777 /var/www/html/wp-content 2>/dev/null;
+             chmod 666 /var/www/html/wp-config.php 2>/dev/null;
+             exit 0"
     networks:
       - lorem101-net
 
   wpcli:
     image: wordpress:cli-php8.2
     container_name: lorem101-wpcli
+    restart: unless-stopped
     depends_on:
-      - db
-      - wordpress
+      db:
+        condition: service_started
+      wordpress:
+        condition: service_started
     volumes:
       - wp_data:/var/www/html
       - ./theme/lorem101-theme:/var/www/html/wp-content/themes/lorem101-theme
       - ./plugins/lorem101-drop-manager:/var/www/html/wp-content/plugins/lorem101-drop-manager
+      - ./plugins/lorem101-demo-mode:/var/www/html/wp-content/plugins/lorem101-demo-mode
+      - ./plugins/lorem101-restock-notifier:/var/www/html/wp-content/plugins/lorem101-restock-notifier
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_NAME: ${DB_NAME:-wordpress}
